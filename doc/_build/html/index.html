@@ -1,0 +1,327 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to Directory Queue consumer’s documentation! &mdash; Directory queue consumer 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Directory queue consumer 1 documentation" href="#" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="#">Directory queue consumer 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="welcome-to-directory-queue-consumer-s-documentation">
+<h1>Welcome to Directory Queue consumer&#8217;s documentation!<a class="headerlink" href="#welcome-to-directory-queue-consumer-s-documentation" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-dirqconsumer.baseconsumer"></span><p><a class="reference internal" href="#dirqconsumer.baseconsumer.DirqConsumerBase" title="dirqconsumer.baseconsumer.DirqConsumerBase"><tt class="xref py py-class docutils literal"><span class="pre">DirqConsumerBase</span></tt></a> - Base class for consuming <em>messages</em> of a Message Queue</p>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>This module provides a class that abstracts the logic to consume messages from a Messaging Queue. It relies on the <em>messaging.queue</em> module that provides a generic directory-based queue, and the <em>messaging.message</em> for the abstraction of the <em>message</em>. The <a class="reference external" href="http://tomdoc.web.cern.ch/tomdoc/mig/stompclt.html">http://tomdoc.web.cern.ch/tomdoc/mig/stompclt.html</a> client is used to store the messages in the local queue..</p>
+<p>It will consume <em>messages</em> forever from the given <em>Message Queue</em> (abstraction of a directory queue in the filesystem). The <em>Message Queue</em> needs to be filled in independently by the STOMP client stompclt (<a class="reference external" href="http://tomdoc.web.cern.ch/tomdoc/mig/stompclt.html">http://tomdoc.web.cern.ch/tomdoc/mig/stompclt.html</a>).</p>
+<p>The two required modules are python-dirq and python-messaging and are provided by the Messaging team: <a class="reference external" href="http://mpaladin.web.cern.ch/mpaladin/python/messaging/message.html">http://mpaladin.web.cern.ch/mpaladin/python/messaging/message.html</a>. The latest stable libraries can be found in <a class="reference external" href="https://twiki.cern.ch/twiki/bin/view/EMI/MessagingLibraries">https://twiki.cern.ch/twiki/bin/view/EMI/MessagingLibraries</a>.</p>
+</div>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p>This module is designed so that you subclass <a class="reference internal" href="#dirqconsumer.baseconsumer.DirqConsumerBase" title="dirqconsumer.baseconsumer.DirqConsumerBase"><tt class="xref py py-class docutils literal"><span class="pre">DirqConsumerBase</span></tt></a>, and you provide as a minimum the logic of
+<a class="reference internal" href="#dirqconsumer.baseconsumer.DirqConsumerBase._process" title="dirqconsumer.baseconsumer.DirqConsumerBase._process"><tt class="xref py py-meth docutils literal"><span class="pre">DirqConsumerBase._process()</span></tt></a>. This method will be called when there are messages to process in the Directory
+Queue.</p>
+<p>Example of use extending the base class, providing the processing logic:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">dirqconsumer</span> <span class="kn">import</span> <span class="n">DirqConsumerBase</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">ExampleConsumer</span><span class="p">(</span><span class="n">DirqConsumerBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dq_path</span><span class="p">,</span> <span class="n">step_sec</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="n">DirqConsumerBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dq_path</span><span class="p">,</span> <span class="n">step_sec</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="c"># parses the messaging.message</span>
+        <span class="n">header</span><span class="p">,</span> <span class="n">body</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">header</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+        <span class="n">metadata</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;metadata&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;data&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        
+        <span class="c"># process your message</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Processing message: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;key2&#39;</span><span class="p">))</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="n">do_something</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+         <span class="c"># consumes the message, if false leave it in the queue for later processing</span>
+        <span class="k">return</span> <span class="n">success</span>
+
+<span class="n">consumer</span> <span class="o">=</span> <span class="n">ExampleConsumer</span><span class="p">(</span><span class="s">&#39;/var/spool/example-consumer/&#39;</span><span class="p">)</span>
+<span class="n">consumer</span><span class="o">.</span><span class="n">init_queue</span><span class="p">()</span>
+<span class="n">consumer</span><span class="o">.</span><span class="n">purge</span><span class="p">(</span><span class="n">maxtemp</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">maxlock</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+<span class="n">consumer</span><span class="o">.</span><span class="n">consume_forever</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This example is consuming <em>messages</em> in the following format:</p>
+<div class="highlight-python"><pre>{
+    "body": "{
+        "data": {
+            "key1": "value1"
+        },
+        "metadata": {
+            "key2": "value2"
+        }
+    }",
+    "header": {
+        "key3": "value3"
+    },
+    "encoding": {}
+}</pre>
+</div>
+<p>If you want to enable logging, setup a handler and the level to &#8220;dirqconsumer&#8221; logging identifier.</p>
+<p>It checks every <em>step_sec</em> seconds if there are new messages to consume, being a pull mechanism. There is no way to
+implement an event-based mechanism using the current libraries.</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Grab the code from git repository:</p>
+<div class="highlight-python"><pre>$ python setup.py install</pre>
+</div>
+<p>Or use the rpm <em>dirq-consumer</em> in the lemon6 tag of Koji.</p>
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>Under the directory example/ of the root directory of the package, you have a full working python program with a simple
+consumer which browses the directory queue.</p>
+<div class="highlight-python"><pre>$ cd example
+$ python simple_consumer.py -d /var/spool/some-directory-queue/ -L DEBUG</pre>
+</div>
+</div>
+<div class="section" id="contact">
+<h2>Contact<a class="headerlink" href="#contact" title="Permalink to this headline">¶</a></h2>
+<p>Lemon team</p>
+<p>Maintainer: Omar Pera &lt;campbell.sx@gmail.com.ch&gt;</p>
+</div>
+<div class="section" id="class-documentation">
+<h2>Class documentation<a class="headerlink" href="#class-documentation" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="dirqconsumer.baseconsumer.DirqConsumerBase">
+<em class="property">class </em><tt class="descclassname">dirqconsumer.baseconsumer.</tt><tt class="descname">DirqConsumerBase</tt><big>(</big><em>dq_path</em>, <em>step_sec=0.5</em>, <em>dq_type='DQS'</em><big>)</big><a class="headerlink" href="#dirqconsumer.baseconsumer.DirqConsumerBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class that provides an abstraction of a Message Queue consumer.</p>
+<dl class="method">
+<dt id="dirqconsumer.baseconsumer.DirqConsumerBase._handle_error">
+<tt class="descname">_handle_error</tt><big>(</big><em>ename</em>, <em>exception</em><big>)</big><a class="headerlink" href="#dirqconsumer.baseconsumer.DirqConsumerBase._handle_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback when there has been an error looking for new elements in the Message Queue, by default we unlock it for later processing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dirqconsumer.baseconsumer.DirqConsumerBase._handle_file_locked">
+<tt class="descname">_handle_file_locked</tt><big>(</big><em>ename</em><big>)</big><a class="headerlink" href="#dirqconsumer.baseconsumer.DirqConsumerBase._handle_file_locked" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback when the element to be processed is locked, usually by another process</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dirqconsumer.baseconsumer.DirqConsumerBase._handle_msg_error">
+<tt class="descname">_handle_msg_error</tt><big>(</big><em>ename</em>, <em>exception</em><big>)</big><a class="headerlink" href="#dirqconsumer.baseconsumer.DirqConsumerBase._handle_msg_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback when there has been an error during the retrieval of the message, by default we unlock it for later processing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dirqconsumer.baseconsumer.DirqConsumerBase._handle_process_error">
+<tt class="descname">_handle_process_error</tt><big>(</big><em>ename</em>, <em>msg</em>, <em>exception</em><big>)</big><a class="headerlink" href="#dirqconsumer.baseconsumer.DirqConsumerBase._handle_process_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback when <a class="reference internal" href="#dirqconsumer.baseconsumer.DirqConsumerBase._process" title="dirqconsumer.baseconsumer.DirqConsumerBase._process"><tt class="xref py py-meth docutils literal"><span class="pre">_process()</span></tt></a> method raises an exception, by default we unlock it for later processing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dirqconsumer.baseconsumer.DirqConsumerBase._process">
+<tt class="descname">_process</tt><big>(</big><em>msg</em><big>)</big><a class="headerlink" href="#dirqconsumer.baseconsumer.DirqConsumerBase._process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback to process a messaging.message.Message coming from the Message Queue in <a class="reference internal" href="#dirqconsumer.baseconsumer.DirqConsumerBase.consume_forever" title="dirqconsumer.baseconsumer.DirqConsumerBase.consume_forever"><tt class="xref py py-meth docutils literal"><span class="pre">consume_forever()</span></tt></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> &#8211; messaging.message.Message ready to be consumed</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if we want to indicate that the Message has been succesfully consumed, and can be removed from the
+Queue. If False, it will unlock the element, for later processing.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dirqconsumer.baseconsumer.DirqConsumerBase._setup">
+<tt class="descname">_setup</tt><big>(</big><big>)</big><a class="headerlink" href="#dirqconsumer.baseconsumer.DirqConsumerBase._setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback before the Message Queue starts to consume messages in <a class="reference internal" href="#dirqconsumer.baseconsumer.DirqConsumerBase.consume_forever" title="dirqconsumer.baseconsumer.DirqConsumerBase.consume_forever"><tt class="xref py py-meth docutils literal"><span class="pre">consume_forever()</span></tt></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if success. If False, we do not consume any messages in 
+<a class="reference internal" href="#dirqconsumer.baseconsumer.DirqConsumerBase.consume_forever" title="dirqconsumer.baseconsumer.DirqConsumerBase.consume_forever"><tt class="xref py py-meth docutils literal"><span class="pre">consume_forever()</span></tt></a>, up to the client to decide what to do next.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dirqconsumer.baseconsumer.DirqConsumerBase._teardown">
+<tt class="descname">_teardown</tt><big>(</big><big>)</big><a class="headerlink" href="#dirqconsumer.baseconsumer.DirqConsumerBase._teardown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback after the Message Queue has finished consumed messages in <a class="reference internal" href="#dirqconsumer.baseconsumer.DirqConsumerBase.consume_forever" title="dirqconsumer.baseconsumer.DirqConsumerBase.consume_forever"><tt class="xref py py-meth docutils literal"><span class="pre">consume_forever()</span></tt></a>, the reason could be
+an error or the user stopped the consumer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dirqconsumer.baseconsumer.DirqConsumerBase.consume_forever">
+<tt class="descname">consume_forever</tt><big>(</big><big>)</big><a class="headerlink" href="#dirqconsumer.baseconsumer.DirqConsumerBase.consume_forever" title="Permalink to this definition">¶</a></dt>
+<dd><p>Consume messaging.message.Message&#8217;s forever for the given messaging.queue, removing them from 
+the queue if succesfully consumed.</p>
+<p>For each message to be processed it will call the method <a class="reference internal" href="#dirqconsumer.baseconsumer.DirqConsumerBase._process" title="dirqconsumer.baseconsumer.DirqConsumerBase._process"><tt class="xref py py-meth docutils literal"><span class="pre">DirqConsumerBase._process()</span></tt></a>, consuming 
+the message or not from the Message Queue, depending on the result of the processing.</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">note:</th><td class="field-body">before calling this method, the client should initialize the Queue with <a class="reference internal" href="#dirqconsumer.baseconsumer.DirqConsumerBase.init_queue" title="dirqconsumer.baseconsumer.DirqConsumerBase.init_queue"><tt class="xref py py-meth docutils literal"><span class="pre">init_queue()</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="dirqconsumer.baseconsumer.DirqConsumerBase.init_queue">
+<tt class="descname">init_queue</tt><big>(</big><big>)</big><a class="headerlink" href="#dirqconsumer.baseconsumer.DirqConsumerBase.init_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the message queue from where we will consume messages</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dirqconsumer.baseconsumer.DirqConsumerBase.purge">
+<tt class="descname">purge</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#dirqconsumer.baseconsumer.DirqConsumerBase.purge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove unused intermediate directories,too old temporary elements and unlock too old locked elements from
+the Message Queue</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param kwargs:</th><td class="field-body">keyword arguments passed to <tt class="xref py py-meth docutils literal"><span class="pre">dirq.purge()</span></tt> method, most common are maxtemp and</td>
+</tr>
+</tbody>
+</table>
+<p>maxlock</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">raises:</th><td class="field-body">OSError</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="dirqconsumer.baseconsumer.DirqConsumerBase.stop">
+<tt class="descname">stop</tt><big>(</big><big>)</big><a class="headerlink" href="#dirqconsumer.baseconsumer.DirqConsumerBase.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the processing of new messages on the next step interval</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to Directory Queue consumer&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#contact">Contact</a></li>
+<li><a class="reference internal" href="#class-documentation">Class documentation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="#">Directory queue consumer 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Omar Pera Mira.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

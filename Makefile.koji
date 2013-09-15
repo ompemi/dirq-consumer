@@ -1,0 +1,14 @@
+PACKAGE=dirq-consumer
+
+all:
+				rm -rf /tmp/$(PACKAGE)
+				mkdir /tmp/$(PACKAGE)
+				cp -rv * /tmp/$(PACKAGE)/
+				pwd ; ls -l
+				cd /tmp ; tar --exclude .svn --exclude .git -czf $(PACKAGE).tar.gz $(PACKAGE)
+				mv /tmp/$(PACKAGE).tar.gz .
+				rm -rf /tmp/$(PACKAGE)
+
+clean:
+				rm $(PACKAGE).tar.gz
+
